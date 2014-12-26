@@ -6,13 +6,10 @@
 		"Dusan Kmet <morlokdk@gmail.com>"
 	],
 	"main": [
-		"dist/js/miwo-data.js",
-		"dist/js/miwo-data.min.js"
+		"js/miwo-data.js",
+		"js/miwo-data.min.js"
 	],
 	"ignore": [
-		"src",
-		"gulpfile.js",
-		"package.json"
 	],
 	"dependencies": {
 		"miwo": "latest"
