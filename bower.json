@@ -1,0 +1,20 @@
+{
+	"name": "miwo-data",
+	"description": "Miwo data component",
+	"version": "0.0.1",
+	"authors": [
+		"Dusan Kmet <morlokdk@gmail.com>"
+	],
+	"main": [
+		"dist/js/miwo-data.js",
+		"dist/js/miwo-data.min.js"
+	],
+	"ignore": [
+		"src",
+		"gulpfile.js",
+		"package.json"
+	],
+	"dependencies": {
+		"miwo": "latest"
+	}
+}
