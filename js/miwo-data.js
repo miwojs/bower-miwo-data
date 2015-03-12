@@ -236,13 +236,11 @@ module.exports = Entity;
 
 
 },{"./EntityManager":4,"./Record":9,"./Store":11}],4:[function(require,module,exports){
-var BaseManager, Entity, EntityManager,
+var BaseManager, EntityManager,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 BaseManager = require('./BaseManager');
-
-Entity = require('./Entity');
 
 EntityManager = (function(_super) {
   __extends(EntityManager, _super);
@@ -279,25 +277,26 @@ EntityManager = (function(_super) {
   };
 
   EntityManager.prototype.createEntityClass = function(config) {
-    var field, klass, obj, _ref;
-    klass = (function(_super1) {
-      __extends(_Class, _super1);
+    var Entity, GeneratedEntity, field, obj, _ref;
+    Entity = require('./Entity');
+    GeneratedEntity = (function(_super1) {
+      __extends(GeneratedEntity, _super1);
 
-      function _Class() {
-        return _Class.__super__.constructor.apply(this, arguments);
+      function GeneratedEntity() {
+        return GeneratedEntity.__super__.constructor.apply(this, arguments);
       }
 
-      _Class.prototype.idProperty = config.idProperty;
+      GeneratedEntity.prototype.idProperty = config.idProperty;
 
-      return _Class;
+      return GeneratedEntity;
 
     })(Entity);
     _ref = config.fields;
     for (field in _ref) {
       obj = _ref[field];
-      klass.field(field, obj);
+      GeneratedEntity.field(field, obj);
     }
-    return klass;
+    return GeneratedEntity;
   };
 
   return EntityManager;
@@ -308,9 +307,13 @@ module.exports = EntityManager;
 
 
 },{"./BaseManager":1,"./Entity":3}],5:[function(require,module,exports){
-var Filter;
+var Filter,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Filter = (function() {
+Filter = (function(_super) {
+  __extends(Filter, _super);
+
   Filter.prototype.name = null;
 
   Filter.prototype.type = "string";
@@ -322,10 +325,7 @@ Filter = (function() {
   Filter.prototype.params = null;
 
   function Filter(config) {
-    if (config == null) {
-      config = {};
-    }
-    Object.expand(this, config);
+    Filter.__super__.constructor.call(this, config);
     if (this.operation === "in" || this.operation === "!in") {
       this.value = this.value.split(",");
     }
@@ -369,7 +369,7 @@ Filter = (function() {
 
   return Filter;
 
-})();
+})(Miwo.Object);
 
 module.exports = Filter;
 
@@ -390,7 +390,7 @@ Operation = (function(_super) {
   	  Execute this operation asynchronously. Defaults by proxy settings
    */
 
-  Operation.prototype.async = undefined;
+  Operation.prototype.async = void 0;
 
 
   /**
@@ -398,7 +398,7 @@ Operation = (function(_super) {
   	  The action being performed by this Operation. Should be one of 'create', 'read', 'update' or 'destroy'.
    */
 
-  Operation.prototype.action = undefined;
+  Operation.prototype.action = void 0;
 
 
   /**
@@ -406,7 +406,7 @@ Operation = (function(_super) {
   	  Optional array of filter objects. Only applies to 'read' actions.
    */
 
-  Operation.prototype.filters = undefined;
+  Operation.prototype.filters = void 0;
 
 
   /**
@@ -414,7 +414,7 @@ Operation = (function(_super) {
   	  Optional array of sorter objects. Only applies to 'read' actions.
    */
 
-  Operation.prototype.sorters = undefined;
+  Operation.prototype.sorters = void 0;
 
 
   /**
@@ -422,7 +422,7 @@ Operation = (function(_super) {
   	  The start index (offset), used in paging when running a 'read' action.
    */
 
-  Operation.prototype.offset = undefined;
+  Operation.prototype.offset = void 0;
 
 
   /**
@@ -430,7 +430,7 @@ Operation = (function(_super) {
   	  The number of records to load. Used on 'read' actions when paging is being used.
    */
 
-  Operation.prototype.limit = undefined;
+  Operation.prototype.limit = void 0;
 
 
   /**
@@ -438,7 +438,7 @@ Operation = (function(_super) {
   	  Parameters to pass along with the request when performing the operation.
    */
 
-  Operation.prototype.params = undefined;
+  Operation.prototype.params = void 0;
 
 
   /**
@@ -449,7 +449,7 @@ Operation = (function(_super) {
   	  @cfg {Boolean} callback.success True when operation completed successfully.
    */
 
-  Operation.prototype.callback = undefined;
+  Operation.prototype.callback = void 0;
 
 
   /**
@@ -491,7 +491,7 @@ Operation = (function(_super) {
   	  @private
    */
 
-  Operation.prototype.success = undefined;
+  Operation.prototype.success = void 0;
 
 
   /**
@@ -510,7 +510,7 @@ Operation = (function(_super) {
   	  @private
    */
 
-  Operation.prototype.error = undefined;
+  Operation.prototype.error = void 0;
 
 
   /**
@@ -519,28 +519,28 @@ Operation = (function(_super) {
   	  @private
    */
 
-  Operation.prototype.code = undefined;
+  Operation.prototype.code = void 0;
 
 
   /**
   	  @cfg {Miwo.data.Record[]} records
    */
 
-  Operation.prototype.records = undefined;
+  Operation.prototype.records = void 0;
 
 
   /**
   	  @property {Object} response
    */
 
-  Operation.prototype.response = undefined;
+  Operation.prototype.response = void 0;
 
 
   /**
   	  @cfg {function} recordFactory
    */
 
-  Operation.prototype.createRecord = undefined;
+  Operation.prototype.createRecord = void 0;
 
   function Operation(config) {
     Operation.__super__.constructor.call(this, config);
@@ -750,25 +750,19 @@ Proxy = (function(_super) {
     this.defaults.async = async;
   };
 
-  Proxy.prototype.execute = function(operations, config) {
+  Proxy.prototype.execute = function(operations, options) {
     if (operations.destroy) {
-      this.executeOperations('destroy', operations.destroy, config);
+      options.records = operations.destroy.records;
+      this.destroy(options, operations.destroy.callback);
     }
     if (operations.create) {
-      this.executeOperations('create', operations.create, config);
+      options.records = operations.create.records;
+      this.create(options, operations.create.callback);
     }
     if (operations.update) {
-      this.executeOperations('update', operations.update, config);
+      options.records = operations.update.records;
+      this.update(options, operations.update.callback);
     }
-  };
-
-  Proxy.prototype.executeOperations = function(action, operations, config) {
-    var opc;
-    opc = Object.append({}, config);
-    Object.append(opc, {
-      records: operations.records
-    });
-    this[action](opc, operations.callback);
   };
 
   Proxy.prototype.read = function(config, callback) {
@@ -788,7 +782,16 @@ Proxy = (function(_super) {
   };
 
   Proxy.prototype.createOperation = function(action, config) {
-    var op;
+    var op, record, records, _i, _len, _ref;
+    records = [];
+    if (config.records) {
+      _ref = config.records;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        record = _ref[_i];
+        records.push(record);
+      }
+    }
+    config.records = records;
     op = new Operation(config);
     op.action = action;
     return op;
@@ -810,12 +813,12 @@ Proxy = (function(_super) {
     };
     options.onSuccess = (function(_this) {
       return function(response) {
-        _this.proccessResponse(true, operation, request, response, callback);
+        _this.processResponse(true, operation, request, response, callback);
       };
     })(this);
     options.onFailure = (function(_this) {
       return function() {
-        _this.proccessResponse(false, operation, request, null, callback);
+        _this.processResponse(false, operation, request, null, callback);
       };
     })(this);
     if (operation.async !== void 0) {
@@ -892,7 +895,7 @@ Proxy = (function(_super) {
     return JSON.encode(data);
   };
 
-  Proxy.prototype.proccessResponse = function(success, operation, request, response, callback) {
+  Proxy.prototype.processResponse = function(success, operation, request, response, callback) {
     var xhr;
     if (!success) {
       xhr = request.xhr;
@@ -1290,9 +1293,6 @@ Record = (function(_super) {
 
   Record.prototype.endEdit = function(silent, modifiedFieldNames) {
     var changed, data;
-    if (silent == null) {
-      silent = true;
-    }
     if (this._editing) {
       this._editing = false;
       data = this._dataSaved;
@@ -1473,19 +1473,20 @@ module.exports = Record;
 
 
 },{"./Types":15}],10:[function(require,module,exports){
-var Sorter;
+var Sorter,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Sorter = (function() {
+Sorter = (function(_super) {
+  __extends(Sorter, _super);
+
+  function Sorter() {
+    return Sorter.__super__.constructor.apply(this, arguments);
+  }
+
   Sorter.prototype.name = null;
 
   Sorter.prototype.dir = null;
-
-  function Sorter(config) {
-    if (config == null) {
-      config = {};
-    }
-    Object.expand(this, config);
-  }
 
   Sorter.prototype.compare = function(a, b) {
     var aVal, bVal, sign;
@@ -1523,7 +1524,7 @@ Sorter = (function() {
 
   return Sorter;
 
-})();
+})(Miwo.Object);
 
 module.exports = Sorter;
 
@@ -1635,7 +1636,13 @@ Store = (function(_super) {
     if (!this.entity) {
       throw new Error("Unspecified entity or fields for store " + this);
     }
-    if (this.proxy) {
+    if (!this.proxy && this.api) {
+      this.proxy = {
+        api: this.api
+      };
+      delete this.api;
+    }
+    if (this.proxy || this.api) {
       proxyMgr = miwo.proxyMgr;
       if (Type.isString(this.proxy)) {
         this.proxy = proxyMgr.get(this.proxy);
@@ -1666,6 +1673,7 @@ Store = (function(_super) {
     if (this.autoLoad) {
       this.load();
     }
+    return;
   }
 
   Store.prototype.init = function() {};
@@ -1784,6 +1792,7 @@ Store = (function(_super) {
       records.push(this.createRecord(values));
     }
     this.loadRecords(records, clear);
+    this.emit("load", this, records);
   };
 
   Store.prototype.createRecord = function(values) {
@@ -2076,15 +2085,28 @@ Store = (function(_super) {
     this.data.empty();
   };
 
-  Store.prototype.load = function(options) {
+  Store.prototype.load = function(options, done) {
     if (options == null) {
       options = {};
     }
-    if (this.loading) {
-      return;
+    if (done == null) {
+      done = null;
     }
     if (!this.proxy) {
       throw new Error("Cant load data, proxy is missing in store");
+    }
+    if (options.once && this.loaded) {
+      miwo.async((function(_this) {
+        return function() {
+          if (done) {
+            return done(_this, _this.data, true);
+          }
+        };
+      })(this));
+      return;
+    }
+    if (this.loading) {
+      return;
     }
     options.params = Object.merge({}, this.params, options.params);
     options.offset = (options.offset !== undefined ? options.offset : (options.page ? options.page - 1 : 0) * this.pageSize);
@@ -2094,75 +2116,71 @@ Store = (function(_super) {
     options.addRecords = options.addRecords || false;
     options.recordFactory = this.bound("createRecord");
     this.emit("beforeload", this, options);
-    this.page = (this.pageSize ? Math.max(1, Math.ceil(options.offset / this.pageSize) + 1) : 1);
     this.loading = true;
-    this.proxy.read(options, this.bound("onProxyLoad"));
+    this.page = (this.pageSize ? Math.max(1, Math.ceil(options.offset / this.pageSize) + 1) : 1);
+    this.proxy.read(options, (function(_this) {
+      return function(operation) {
+        var records, response, successful;
+        response = operation.getResponse();
+        records = operation.getRecords();
+        successful = operation.wasSuccessful();
+        if (successful) {
+          _this.loadRecords(records, true);
+        }
+        if (response) {
+          _this.totalCount = response.total;
+        }
+        _this.loading = false;
+        _this.loaded = true;
+        _this.emit("load", _this, records, successful);
+        if (done) {
+          return done(_this, records, successful);
+        }
+      };
+    })(this));
   };
 
-  Store.prototype.loadonce = function(options) {
-    if (this.loaded) {
-      return;
-    }
-    this.load(options);
-  };
-
-  Store.prototype.reload = function() {
+  Store.prototype.reload = function(done) {
     this.load({
       page: this.page
-    });
+    }, done);
   };
 
-  Store.prototype.onProxyLoad = function(operation) {
-    var records, response, successful;
-    response = operation.getResponse();
-    records = operation.getRecords();
-    successful = operation.wasSuccessful();
-    if (response) {
-      this.totalCount = response.total;
-    }
-    if (successful) {
-      this.loadRecords(records, true);
-    }
-    this.loading = false;
-    this.loaded = true;
-    this.emit("load", this, records, successful);
-  };
-
-  Store.prototype.loadPage = function(page) {
+  Store.prototype.loadPage = function(page, done) {
     if (!this.pageSize) {
       return;
     }
     this.page = Math.max(1, Math.min(page, Math.ceil(this.totalCount / this.pageSize)));
     this.load({
       page: this.page
-    });
+    }, done);
   };
 
-  Store.prototype.loadPrevPage = function() {
+  Store.prototype.loadPrevPage = function(done) {
     if (!this.pageSize) {
       return;
     }
     this.page = Math.max(1, this.page - 1);
     this.load({
       page: this.page
-    });
+    }, done);
   };
 
-  Store.prototype.loadNextPage = function() {
+  Store.prototype.loadNextPage = function(done) {
     if (!this.pageSize) {
       return;
     }
     this.page = Math.min(this.page + 1, Math.ceil(this.totalCount / this.pageSize));
     this.load({
       page: this.page
-    });
+    }, done);
   };
 
-  Store.prototype.loadNestedPage = function(type) {
+  Store.prototype.loadNestedPage = function(type, done) {
     if (type === 'prev') {
-      this.loadPrevPage();
+      this.loadPrevPage(done);
     } else if (type === 'next') {
-      this.loadNextPage();
+      this.loadNextPage(done);
     }
   };
 
@@ -2209,13 +2227,12 @@ Store = (function(_super) {
       needsSync = true;
     }
     if (needsSync) {
-      operations.sync = true;
+      operations.preventSync = false;
       this.emit("beforesync", operations);
-      if (operations.sync) {
+      if (!operations.preventSync) {
         this.proxy.execute(operations, {
           recordFactory: this.bound("createRecord")
         });
-        this.emit("sync", this);
       }
     }
   };
@@ -2223,16 +2240,25 @@ Store = (function(_super) {
   Store.prototype.createProxyCallback = function(name, options) {
     return (function(_this) {
       return function(op) {
+        _this.emit("sync", _this, op);
         if (op.wasSuccessful()) {
           _this.emit("success", _this, op);
           _this[name]();
-          if (options.success) {
-            return options.success(_this, op);
+          if (Type.isObject(options)) {
+            if (options.success) {
+              return options.success(_this, op);
+            }
+          } else {
+            return options(_this, op);
           }
         } else {
           _this.emit("failure", _this, op);
-          if (options.failure) {
-            return options.failure(_this, op);
+          if (Type.isObject(options)) {
+            if (options.failure) {
+              return options.failure(_this, op);
+            }
+          } else {
+            return options(_this, op);
           }
         }
       };
@@ -2303,10 +2329,12 @@ Store = (function(_super) {
   };
 
   Store.prototype.afterReject = function(record) {
+    this.updatedRecords.erase(record);
     this.emit("update", this, record, "reject", null);
   };
 
   Store.prototype.afterCommit = function(record) {
+    this.updatedRecords.erase(record);
     this.emit("update", this, record, "commit", null);
   };
 
@@ -2330,6 +2358,7 @@ StoreFilters = (function() {
   function StoreFilters(store) {
     this.store = store;
     this.filters = [];
+    return;
   }
 
   StoreFilters.prototype.getAll = function() {
@@ -2444,6 +2473,9 @@ StoreManager = (function(_super) {
     store = StoreManager.__super__.create.call(this, name);
     if (!store.isStore) {
       throw new Error("Created store is not instance of Miwo.data.Store");
+    }
+    if (!store.name) {
+      store.name = name;
     }
     return store;
   };
